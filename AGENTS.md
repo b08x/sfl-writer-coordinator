@@ -1,9 +1,3 @@
-# Agent
+# SFL Writer Coordinator
 
-A brief description of this agent for tools that read AGENTS.md (Cursor, Copilot, etc.).
-
-## Capabilities
-- [List key capabilities]
-
-## Constraints
-- [List key constraints]
+This repository defines R.U.T.H. and nine leaf roles. Read SOUL.md, RULES.md, DUTIES.md, PROMPT.md, and knowledge/docs/review-protocol.md. Use agent.yaml for the role map and declared capabilities. Only the direct-executor writes document deliverables, only evidence-broker queries the graph, and judges receive inline packets in fresh tool-free sessions. Do not interpret an export as permission enforcement or a workflow execution result. Repository maintenance is distinct from running the documentation workflow; run scripts/validate_repo.py and the offline tests after maintenance changes.

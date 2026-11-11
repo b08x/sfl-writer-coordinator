@@ -1,0 +1,28 @@
+name: prepare-cross
+version: 0.4.0
+description: Require three distinct frozen blind judgments and revision-matched evidence, then compute
+  the shared evidence digest and return the cross-examination packet.
+input_schema:
+  type: object
+  properties:
+    blind: &id001
+      type: object
+    judgments:
+      type: array
+      items: *id001
+    evidence: *id001
+  required:
+  - blind
+  - judgments
+  - evidence
+  additionalProperties: false
+output_schema:
+  type: object
+implementation:
+  type: script
+  path: scripts/prepare-cross.py
+  runtime: python3
+annotations:
+  read_only: true
+  idempotent: true
+  cost: none

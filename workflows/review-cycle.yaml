@@ -1,0 +1,145 @@
+name: review-cycle
+version: 0.4.0
+description: 'One frozen candidate: blind fan-out, targeted evidence, cross fan-out, gates, consistency
+  check. Requires host scheduling and isolation.'
+inputs:
+- name: source
+  type: object
+  description: 'prepare_blind source: task_id, document_revision, repository_revision, draft, register.'
+- name: brief
+  type: object
+  description: Exact project, revision, scope, evidence tier, prior query state, and retrieval questions.
+outputs:
+- name: result
+  type: object
+  description: The acceptance step result, including accepted and reasons.
+steps:
+- id: freeze
+  action: Compute the candidate hash and create the restricted blind packet.
+  tool: prepare-blind
+  depends_on: []
+  inputs:
+    source: ${{ inputs.source }}
+  outputs:
+  - packet
+- id: blind-ideational
+  action: Use a NEW tool-free session; inline only this restricted packet. Preserve the returned JSON
+    as judgment.
+  agent: sfl-writer-docs-ideational-judge
+  depends_on:
+  - freeze
+  inputs:
+    packet: ${{ steps.freeze.outputs.packet }}
+  outputs:
+  - judgment
+- id: blind-interpersonal
+  action: Use a NEW tool-free session; inline only this restricted packet. Preserve the returned JSON
+    as judgment.
+  agent: sfl-writer-docs-interpersonal-judge
+  depends_on:
+  - freeze
+  inputs:
+    packet: ${{ steps.freeze.outputs.packet }}
+  outputs:
+  - judgment
+- id: blind-textual
+  action: Use a NEW tool-free session; inline only this restricted packet. Preserve the returned JSON
+    as judgment.
+  agent: sfl-writer-docs-textual-judge
+  depends_on:
+  - freeze
+  inputs:
+    packet: ${{ steps.freeze.outputs.packet }}
+  outputs:
+  - judgment
+- id: evidence
+  action: Wait for all blind results; retrieve targeted candidate-bound evidence. Return the raw JSON
+    as packet.
+  agent: sfl-writer-evidence-broker
+  depends_on:
+  - blind-ideational
+  - blind-interpersonal
+  - blind-textual
+  inputs:
+    brief: ${{ inputs.brief }}
+    blind: ${{ steps.freeze.outputs.packet }}
+    judgments:
+    - ${{ steps.blind-ideational.outputs.judgment }}
+    - ${{ steps.blind-interpersonal.outputs.judgment }}
+    - ${{ steps.blind-textual.outputs.judgment }}
+  outputs:
+  - packet
+- id: cross-packet
+  action: Validate the blind roster and evidence identities; compute the evidence digest.
+  tool: prepare-cross
+  depends_on:
+  - evidence
+  inputs:
+    blind: ${{ steps.freeze.outputs.packet }}
+    judgments:
+    - ${{ steps.blind-ideational.outputs.judgment }}
+    - ${{ steps.blind-interpersonal.outputs.judgment }}
+    - ${{ steps.blind-textual.outputs.judgment }}
+    evidence: ${{ steps.evidence.outputs.packet }}
+  outputs:
+  - packet
+- id: cross-ideational
+  action: Use a NEW tool-free session; inline only this common cross packet. Return raw JSON as judgment.
+  agent: sfl-writer-docs-ideational-judge
+  depends_on:
+  - cross-packet
+  inputs:
+    packet: ${{ steps.cross-packet.outputs.packet }}
+  outputs:
+  - judgment
+- id: cross-interpersonal
+  action: Use a NEW tool-free session; inline only this common cross packet. Return raw JSON as judgment.
+  agent: sfl-writer-docs-interpersonal-judge
+  depends_on:
+  - cross-packet
+  inputs:
+    packet: ${{ steps.cross-packet.outputs.packet }}
+  outputs:
+  - judgment
+- id: cross-textual
+  action: Use a NEW tool-free session; inline only this common cross packet. Return raw JSON as judgment.
+  agent: sfl-writer-docs-textual-judge
+  depends_on:
+  - cross-packet
+  inputs:
+    packet: ${{ steps.cross-packet.outputs.packet }}
+  outputs:
+  - judgment
+- id: gates
+  action: Adjudicate the three current judgments into five gates without changing the draft. Coordinator
+    supplies gate JSON.
+  skill: assemble-review-gates
+  depends_on:
+  - cross-ideational
+  - cross-interpersonal
+  - cross-textual
+  inputs:
+    cross: ${{ steps.cross-packet.outputs.packet }}
+    judgments:
+    - ${{ steps.cross-ideational.outputs.judgment }}
+    - ${{ steps.cross-interpersonal.outputs.judgment }}
+    - ${{ steps.cross-textual.outputs.judgment }}
+  outputs:
+  - gates
+- id: acceptance
+  action: Run deterministic consistency checks. accepted=false is a review failure, not a passed tool
+    invocation.
+  tool: check-final
+  depends_on:
+  - gates
+  inputs:
+    cross: ${{ steps.cross-packet.outputs.packet }}
+    judgments:
+    - ${{ steps.cross-ideational.outputs.judgment }}
+    - ${{ steps.cross-interpersonal.outputs.judgment }}
+    - ${{ steps.cross-textual.outputs.judgment }}
+    gates: ${{ steps.gates.outputs.gates }}
+  outputs:
+  - result
+error_handling:
+  on_step_failure: abort

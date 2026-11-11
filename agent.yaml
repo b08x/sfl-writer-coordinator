@@ -1,72 +1,204 @@
-spec_version: "0.1.0"
-name: my-agent
-version: 0.1.0
-description: A production-ready agent with full compliance configuration
-author: ""
-license: proprietary
+spec_version: 0.1.0
+name: sfl-writer-coordinator
+version: 0.4.0
+description: R.U.T.H. coordinates evidence-backed SFL writing, blind metafunction audits, and revision-bound
+  cross-examination.
+author: b08x
 model:
   preferred: claude-opus-4-6
   fallback:
-    - claude-sonnet-4-5-20250929
+  - claude-sonnet-4-6
   constraints:
-    temperature: 0.1
     max_tokens: 8192
-skills: []
-tools: []
+skills:
+- write-with-review
+- sfl-technical-writing
+- assemble-review-gates
+tools:
+- prepare-blind
+- prepare-cross
+- check-final
+mcp_servers:
+  review-packets:
+    command: python3
+    args:
+    - scripts/review_mcp.py
 delegation:
-  mode: auto
-runtime:
-  max_turns: 50
-  timeout: 300
+  mode: explicit
+agents:
+  sfl-writer-analytical-validator:
+    description: Critical verification, boundary checking, and counter-evidence analysis
+    delegation:
+      mode: explicit
+      triggers:
+      - Explicitly requested domain advice
+  sfl-writer-collaborative-synthesizer:
+    description: Multi-agent consensus reconciliation, positive alignment, and shared context unification
+    delegation:
+      mode: explicit
+      triggers:
+      - Explicitly requested domain advice
+  sfl-writer-direct-executor:
+    description: Action-oriented problem resolution, direct instructions, and immediate execution
+    delegation:
+      mode: explicit
+      triggers:
+      - Draft or revise an authorized document; never approve
+  sfl-writer-docs-ideational-judge:
+    description: Independent ideational metafunction blind audit and evidence-backed cross-examination;
+      no tools, edits, or delegation.
+    delegation:
+      mode: explicit
+      triggers:
+      - Blind audit or cross-examination after the corresponding packet is prepared
+  sfl-writer-docs-interpersonal-judge:
+    description: Independent interpersonal metafunction blind audit and evidence-backed cross-examination;
+      no tools, edits, or delegation.
+    delegation:
+      mode: explicit
+      triggers:
+      - Blind audit or cross-examination after the corresponding packet is prepared
+  sfl-writer-docs-textual-judge:
+    description: Independent textual metafunction blind audit and evidence-backed cross-examination; no
+      tools, edits, or delegation.
+    delegation:
+      mode: explicit
+      triggers:
+      - Blind audit or cross-examination after the corresponding packet is prepared
+  sfl-writer-evidence-broker:
+    description: Retrieve revision-bound codebase-memory evidence, coverage and source fallbacks for R.U.T.H.;
+      no drafting or administrative graph mutations.
+    delegation:
+      mode: explicit
+      triggers:
+      - Retrieve scoped revision-bound evidence
+  sfl-writer-pragmatic-realist:
+    description: Grounding theory into lived experience, practical heuristics, and field constraints
+    delegation:
+      mode: explicit
+      triggers:
+      - Explicitly requested domain advice
+  sfl-writer-socratic-inquirer:
+    description: Requirement scoping, nuance disambiguation, and probing diagnostic inquiries
+    delegation:
+      mode: explicit
+      triggers:
+      - Explicitly requested domain advice
 compliance:
   risk_tier: standard
-  frameworks: []
-  supervision:
-    designated_supervisor: null
-    review_cadence: quarterly
-    human_in_the_loop: conditional
-    escalation_triggers:
-      - confidence_below: 0.7
-      - error_detected: true
-    override_capability: true
-    kill_switch: true
-  recordkeeping:
-    audit_logging: true
-    log_format: structured_json
-    retention_period: 6y
-    log_contents:
-      - prompts_and_responses
-      - tool_calls
-      - decision_pathways
-      - model_version
-      - timestamps
-    immutable: true
-  model_risk:
-    inventory_id: null
-    validation_cadence: annual
-    validation_type: full
-    conceptual_soundness: null
-    ongoing_monitoring: true
-    outcomes_analysis: true
-    drift_detection: true
-    parallel_testing: false
-  data_governance:
-    pii_handling: redact
-    data_classification: confidential
-    consent_required: true
-    cross_border: false
-    bias_testing: true
-    lda_search: false
-  communications:
-    type: correspondence
-    pre_review_required: false
-    fair_balanced: true
-    no_misleading: true
-    disclosures_required: false
-  vendor_management:
-    due_diligence_complete: false
-    soc_report_required: false
-    vendor_ai_notification: true
-    subcontractor_assessment: false
-tags: []
-metadata: {}
+  segregation_of_duties:
+    roles:
+    - id: orchestrator
+      description: Coordinate and adjudicate without authoring or judging
+      permissions:
+      - report
+    - id: maker
+      description: Sole document author; no approval authority
+      permissions:
+      - create
+      - submit
+    - id: broker
+      description: Retrieve scoped source evidence; no drafting or graph mutation
+      permissions:
+      - report
+    - id: advisor
+      description: Advise without document writes or final approval
+      permissions:
+      - review
+      - report
+    - id: ideational
+      description: Independent ideational judge
+      permissions:
+      - review
+      - approve
+      - reject
+    - id: interpersonal
+      description: Independent interpersonal judge
+      permissions:
+      - review
+      - approve
+      - reject
+    - id: textual
+      description: Independent textual judge
+      permissions:
+      - review
+      - approve
+      - reject
+    conflicts:
+    - - maker
+      - orchestrator
+    - - maker
+      - broker
+    - - maker
+      - advisor
+    - - maker
+      - ideational
+    - - maker
+      - interpersonal
+    - - maker
+      - textual
+    - - orchestrator
+      - broker
+    - - orchestrator
+      - ideational
+    - - orchestrator
+      - interpersonal
+    - - orchestrator
+      - textual
+    - - broker
+      - ideational
+    - - broker
+      - interpersonal
+    - - broker
+      - textual
+    - - ideational
+      - interpersonal
+    - - ideational
+      - textual
+    - - interpersonal
+      - textual
+    assignments:
+      sfl-writer-coordinator:
+      - orchestrator
+      sfl-writer-analytical-validator:
+      - advisor
+      sfl-writer-collaborative-synthesizer:
+      - advisor
+      sfl-writer-direct-executor:
+      - maker
+      sfl-writer-docs-ideational-judge:
+      - ideational
+      sfl-writer-docs-interpersonal-judge:
+      - interpersonal
+      sfl-writer-docs-textual-judge:
+      - textual
+      sfl-writer-evidence-broker:
+      - broker
+      sfl-writer-pragmatic-realist:
+      - advisor
+      sfl-writer-socratic-inquirer:
+      - advisor
+    handoffs:
+    - action: accept_document
+      required_roles:
+      - maker
+      - broker
+      - ideational
+      - interpersonal
+      - textual
+      - orchestrator
+      approval_required: true
+    - action: accept_audit
+      required_roles:
+      - broker
+      - ideational
+      - interpersonal
+      - textual
+      - orchestrator
+      approval_required: true
+    enforcement: advisory
+metadata:
+  source_format: antigravity
+  source_version: 0.3.0
+  opengap_revision: d7a8e2edb54b942d6b4635cdd8b919ebd23e5da5
+  execution_boundary: Portable definitions; host must bind tools, isolate sessions, and schedule the DAG.

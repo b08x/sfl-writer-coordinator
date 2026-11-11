@@ -1,1 +1,5 @@
-documents: []
+documents:
+- path: docs/review-protocol.md
+  priority: high
+  always_load: true
+  description: Revision-bound gather/draft, blind audit, evidence, cross-examination, and acceptance protocol.
