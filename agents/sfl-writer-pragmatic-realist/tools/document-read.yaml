@@ -1,0 +1,15 @@
+name: document-read
+version: 0.4.0
+description: Host-bound read-only access to explicitly supplied source/document paths. No implementation
+  or grant is bundled.
+input_schema:
+  type: object
+  properties:
+    path:
+      type: string
+  required:
+  - path
+annotations:
+  read_only: true
+  idempotent: true
+  cost: none

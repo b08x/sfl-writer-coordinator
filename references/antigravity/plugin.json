@@ -1,0 +1,11 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "sfl-writer",
+  "displayName": "SFL Writer",
+  "version": "0.3.0",
+  "description": "R.U.T.H. evidence-backed sfl-writer workflow: codebase-memory broker, blind metafunction audits, and revision-bound cross-examination.",
+  "logo": "assets/logo.svg",
+  "suggestedPrompts": [
+    "Draft a technical explanation from my supplied sources and independently review it."
+  ]
+}

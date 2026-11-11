@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "review_packets": {
+      "command": "python3",
+      "args": [
+        "${PLUGIN_ROOT}/scripts/review_mcp.py"
+      ]
+    }
+  }
+}

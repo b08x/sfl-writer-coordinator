@@ -1,0 +1,22 @@
+name: prepare-blind
+version: 0.4.0
+description: Create a blind audit packet, compute the draft hash, and exclude standalone evidence/peer/editorial
+  fields. Register must include the selected template and judge output contract.
+input_schema:
+  type: object
+  properties:
+    source:
+      type: object
+  required:
+  - source
+  additionalProperties: false
+output_schema:
+  type: object
+implementation:
+  type: script
+  path: scripts/prepare-blind.py
+  runtime: python3
+annotations:
+  read_only: true
+  idempotent: true
+  cost: none

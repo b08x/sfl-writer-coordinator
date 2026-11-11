@@ -1,0 +1,18 @@
+spec_version: 0.1.0
+name: sfl-writer-direct-executor
+version: 0.4.0
+description: Action-oriented problem resolution, direct instructions, and immediate execution
+model:
+  preferred: claude-sonnet-4-6
+  fallback:
+  - claude-opus-4-6
+  constraints:
+    max_tokens: 8192
+skills:
+- sfl-technical-writing
+tools:
+- document-read
+- document-write
+metadata:
+  sod_role: maker
+  runtime_binding: See ../../docs/runtime-contract.md; no implicit MCP or context inheritance.

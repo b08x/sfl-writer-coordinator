@@ -1,0 +1,16 @@
+spec_version: 0.1.0
+name: sfl-writer-docs-interpersonal-judge
+version: 0.4.0
+description: Independent interpersonal metafunction blind audit and evidence-backed cross-examination;
+  no tools, edits, or delegation.
+model:
+  preferred: claude-sonnet-4-6
+  fallback:
+  - claude-opus-4-6
+  constraints:
+    max_tokens: 8192
+skills: []
+tools: []
+metadata:
+  sod_role: interpersonal
+  runtime_binding: See ../../docs/runtime-contract.md; no implicit MCP or context inheritance.
